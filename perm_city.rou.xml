@@ -1,0 +1,44 @@
+<routes xmlns:xsi="http://w3.org" xsi:noNamespaceSchemaLocation="http://dlr.de">
+    
+    <!-- ================================================================= -->
+    <!-- 1. ОПРЕДЕЛЕНИЕ ТИПОВ ТРАНСПОРТА (Параметры для распознавания ИИ)  -->
+    <!-- ================================================================= -->
+    
+    <!-- Легковой автомобиль: длина 5м, быстрый разгон -->
+    <vType id="car_passenger" vClass="passenger" length="5.0" maxSpeed="16.67" accel="2.6" decel="4.5" sigma="0.5"/>
+    
+    <!-- Грузовой транспорт: длина 10м, медленный разгон, занимает больше места в очереди -->
+    <vType id="truck_commercial" vClass="truck" length="10.0" maxSpeed="13.89" accel="1.2" decel="3.5" sigma="0.5"/>
+    
+    <!-- Автобус (Максимальный приоритет для ИИ): длина 12м, частые остановки, большой вес в функции награды -->
+    <vType id="bus_perm" vClass="bus" length="12.0" maxSpeed="13.89" accel="1.0" decel="4.0" sigma="0.5" guiShape="bus"/>
+
+    <!-- ================================================================= -->
+    <!-- 2. ОПРЕДЕЛЕНИЕ МАРШРУТОВ (Граф дорог)                            -->
+    <!-- ID дорог (edges) должны совпадать с вашей картой perm_city.net.xml-->
+    <!-- ================================================================= -->
+    
+    <!-- Транзит Северо-Юг -->
+    <route id="route_N_S" edges="edge_north_in edge_south_out"/>
+    <!-- Транзит Восток-Запад -->
+    <route id="route_E_W" edges="edge_east_in edge_west_out"/>
+
+    <!-- ================================================================= -->
+    <!-- 3. ГЕНЕРАЦИЯ ПОТОКА (Генерируем затор для обучения модели)       -->
+    <!-- ================================================================= -->
+    
+    # Поток обычных легковых машин (идет каждые ~4 секунды с Севера на Юг)
+    <flow id="flow_cars_NS" type="car_passenger" route="route_N_S" begin="0" end="3600" period="4" departLane="best"/>
+    
+    # Поток грузовиков на том же маршруте (каждые 30 секунд)
+    <flow id="flow_trucks_NS" type="truck_commercial" route="route_N_S" begin="0" end="3600" period="30" departLane="best"/>
+
+    # ПОТОК АВТОБУСОВ ПЕРМИ (Появляются реже, каждые 90 секунд)
+    # Когда этот объект будет подъезжать к перекрестку, ваш ИИ должен будет бросить все силы на его пропуск
+    <flow id="flow_buses_NS" type="bus_perm" route="route_N_S" begin="10" end="3600" period="90" departLane="best"/>
+
+    # Пересекающий поток с Востока на Запад (создает конфликтную точку и пробку)
+    <flow id="flow_cars_EW" type="car_passenger" route="route_E_W" begin="0" end="3600" period="6" departLane="best"/>
+    <flow id="flow_buses_EW" type="bus_perm" route="route_E_W" begin="20" end="3600" period="120" departLane="best"/>
+
+</routes>
