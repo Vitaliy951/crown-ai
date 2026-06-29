@@ -218,3 +218,5 @@ def plots(vehicles):
 
 
 https://github.com/skandavivek/sumo-traffic-grids
+
+https://geoffboeing.com/2016/11/osmnx-python-street-networks/
