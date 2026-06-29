@@ -1,0 +1,6 @@
+<configuration>
+    <input>
+        <net-file value="perm_city.net.xml"/>
+        <route-files value="perm_city.rou.xml"/>
+    </input>
+</configuration>
